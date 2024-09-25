@@ -44,7 +44,7 @@ export default function CustomizedSwitches() {
   const [done, setDone] = React.useState(false);
 
   useEffect(() => {
-    fetch('http://localhost/app/get_tasks.php')
+    fetch('https://to-do-back-a6f40cecf847.herokuapp.com/app/get_tasks.php')
       .then(response => response.json())
       .then(data => {
         setDone(data)
