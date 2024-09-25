@@ -16,7 +16,7 @@ export default function Logout() {
       if (response.ok) {
         console.log('Logout successful');
         // Redirect to the login page
-        window.location.href = '/login'; // Redirect to the login page
+        window.location.href = '/'; // Redirect to the login page
       } else {
         console.error('Logout failed', response.statusText);
       }
