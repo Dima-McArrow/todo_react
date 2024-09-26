@@ -16,8 +16,9 @@ function Main() {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('jwt');
+      console.log("the tocken: ", token);
       if (!token) {
-        setLoading(false);
+        
         return; // No token means not authenticated
       }
 
@@ -32,6 +33,7 @@ function Main() {
         });
 
         const data = await response.json();
+        setLoading(false);
         setAuthenticated(data.authenticated);
       } catch (error) {
         console.error('Error checking authentication', error);
