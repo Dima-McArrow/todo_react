@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import todoLogo from './assets/todo.svg';
@@ -23,13 +23,22 @@ export default function Login({ setAuthenticated }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Added loading state
+  const [loading, setLoading] = useState(false);
+
+  // Check if the user is already authenticated on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      setAuthenticated(true);
+      window.location.href = '/'; // Redirect to home if already authenticated
+    }
+  }, [setAuthenticated]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setLoading(true); // Start loading
-    setError(''); // Reset error message
+    setLoading(true);
+    setError('');
 
     try {
       const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/login.php', {
@@ -37,7 +46,6 @@ export default function Login({ setAuthenticated }: LoginProps) {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        credentials: 'include',
         body: new URLSearchParams({
           email: email,
           password: password,
@@ -47,17 +55,17 @@ export default function Login({ setAuthenticated }: LoginProps) {
       const data = await response.json();
 
       if (data.token) {
-        localStorage.setItem('jwt', data.token);
+        localStorage.setItem('jwt', data.token); // Store token in local storage
         setAuthenticated(true);
         window.location.href = '/';
       } else {
-        setError(data.error || 'Email or password is incorrect'); // Updated error message
+        setError(data.error || 'Email or password is incorrect');
       }
     } catch (err) {
       console.error(err);
       setError('An error occurred during login. Please try again.');
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -100,7 +108,7 @@ export default function Login({ setAuthenticated }: LoginProps) {
         />
         <p>* required field</p>
         <Button type="submit" variant="contained" color="primary" className='log_in' disabled={loading}>
-          {loading ? <CircularProgress size={24} /> : 'Login'} {/* Show loading indicator */}
+          {loading ? <CircularProgress size={24} /> : 'Login'}
         </Button>
         <p>Don't have an account yet? <a href="/sign_in">Sign up (free)</a></p>
       </Box>

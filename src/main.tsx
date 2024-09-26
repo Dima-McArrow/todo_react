@@ -11,38 +11,16 @@ import CreateTask from './new_task.tsx';
 function Main() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  // const navigate = useNavigate(); // Added useNavigate hook
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('jwt');
-      console.log("the tocken: ", token);
-      if (!token) {
-        
-        return; // No token means not authenticated
-      }
-
-      try {
-        const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/check_auth.php', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-
-        const data = await response.json();
-        setLoading(false);
-        setAuthenticated(data.authenticated);
-      } catch (error) {
-        console.error('Error checking authentication', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
+    const token = localStorage.getItem('jwt');
+    console.log("The token: ", token);
+    
+    if (token) {
+      setAuthenticated(true); // If token exists, user is authenticated
+    }
+    
+    setLoading(false); // Loading is done after checking for the token
   }, []);
 
   if (loading) {

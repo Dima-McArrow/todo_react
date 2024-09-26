@@ -28,21 +28,33 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const token = localStorage.getItem('jwt'); // Retrieve JWT from local storage
+        console.info("The token: ", token);
+
+        if (!token) {
+          throw new Error('No token found');
+        }
+
+        // Send request to the backend to validate the JWT and fetch user info
         const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/check_auth.php', {
           method: 'GET',
-          credentials: 'include', // Include credentials (cookies) with the request
+          headers: {
+            'Authorization': `Bearer ${token}` // Include the JWT in Authorization header
+          },
         });
 
-        const data = await response.json();
-        console.info(data); // Log the response data
+        const responseText = await response.text(); // Get raw response as text
+        console.info("Raw Backend response: ", responseText); // Log the raw response
+        const data = JSON.parse(responseText); // Then parse it manually
 
-        // Set authentication state and user name based on response
-        setAuthenticated(data.authenticated);
         if (data.authenticated) {
-          setUserName(data.user_name); // Get user name from response
+          setAuthenticated(true);
+          setUserName(data.user_id); // Get user name from the backend
+        } else {
+          console.error('User not authenticated');
         }
       } catch (error) {
-        console.error('Error checking authentication', error);
+        console.error('Error checking authentication:', error);
       } finally {
         setLoading(false); // End loading state
       }
@@ -53,9 +65,9 @@ function App() {
 
   if (loading) {
     return (
-        <div className='app_progress'>
-          <CircularProgress />
-        </div>
+      <div className='app_progress'>
+        <CircularProgress />
+      </div>
     );
   }
 
@@ -75,7 +87,7 @@ function App() {
             <img src={todoLogo} className="logo todo" alt="ToDo logo" />
           </a>
         </div>
-        <h1>Tasks</h1>       
+        <h1>Tasks</h1>
         {/* Display user name if authenticated */}
         {authenticated && <h2>Hey, {userName}!</h2>}
         <h4>Here are your tasks:</h4>

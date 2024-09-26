@@ -1,4 +1,4 @@
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 
 export default function Logout() {
   const handleLogout = async () => {
@@ -15,6 +15,12 @@ export default function Logout() {
       // Handle the response
       if (response.ok) {
         console.log('Logout successful');
+        // Remove the JWT from localStorage
+        localStorage.removeItem('jwt');
+        
+        // Update authentication state
+        
+
         // Redirect to the login page
         window.location.href = '/'; // Redirect to the login page
       } else {

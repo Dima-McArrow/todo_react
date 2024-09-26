@@ -49,8 +49,8 @@ function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => v
     setOpen(false);
   };
 
-  const handleConfirmDelete = () => {
-    deleteTask(taskId); // Call the function to delete the task
+  const handleConfirmDelete = async () => {
+    await deleteTask(taskId); // Call the function to delete the task
     onConfirm(); // Call the callback to refresh the task list
     handleClose(); // Close the dialog after deletion
   };
@@ -85,26 +85,26 @@ function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => v
   );
 }
 
-function deleteTask(taskId: number) {
+async function deleteTask(taskId: number) {
   const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
 
-  fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Bearer ${token}` // Include the token in the request header
-    },
-    credentials: 'include',
-    body: new URLSearchParams({
-      task_id: taskId.toString(),
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.info("data from delete task: ");
-      console.info(data);
-    })
-    .catch((error) => console.error('Error deleting task:', error));
+  try {
+    const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Bearer ${token}` // Include the token in the request header
+      },
+      body: new URLSearchParams({
+        task_id: taskId.toString(),
+      }),
+    });
+
+    const data = await response.json();
+    console.info("Data from delete task: ", data);
+  } catch (error) {
+    console.error('Error deleting task:', error);
+  }
 }
 
 // Task interface
@@ -129,11 +129,10 @@ export default function BasicCard() {
 
       try {
         const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`, // Include the token in the request header
           },
-          credentials: 'include', // Include credentials (cookies) with the request
         });
 
         if (!response.ok) {
@@ -159,11 +158,10 @@ export default function BasicCard() {
 
     try {
       const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`, // Include the token in the request header
         },
-        credentials: 'include',
       });
 
       if (!response.ok) {
