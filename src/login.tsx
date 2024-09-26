@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import './login.css';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const darkTheme = createTheme({
   palette: {
@@ -14,7 +15,6 @@ const darkTheme = createTheme({
   },
 });
 
-// Add the setAuthenticated prop
 interface LoginProps {
   setAuthenticated: (authenticated: boolean) => void;
 }
@@ -23,9 +23,13 @@ export default function Login({ setAuthenticated }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Added loading state
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
+
+    setLoading(true); // Start loading
+    setError(''); // Reset error message
 
     try {
       const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/login.php', {
@@ -42,17 +46,18 @@ export default function Login({ setAuthenticated }: LoginProps) {
 
       const data = await response.json();
 
-      if (data.authenticated) {
-        // Store the JWT in local storage
+      if (data.token) {
         localStorage.setItem('jwt', data.token);
-        setAuthenticated(true); // Update authenticated state in the parent component
-        window.location.href = '/'; // Redirect to home
+        setAuthenticated(true);
+        window.location.href = '/';
       } else {
-        setError('Email or password is incorrect');
+        setError(data.error || 'Email or password is incorrect'); // Updated error message
       }
     } catch (err) {
-      console.error(err); // Log error for debugging
+      console.error(err);
       setError('An error occurred during login. Please try again.');
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -94,8 +99,8 @@ export default function Login({ setAuthenticated }: LoginProps) {
           onChange={(e) => setPassword(e.target.value)}
         />
         <p>* required field</p>
-        <Button type="submit" variant="contained" color="primary" className='log_in'>
-          Login
+        <Button type="submit" variant="contained" color="primary" className='log_in' disabled={loading}>
+          {loading ? <CircularProgress size={24} /> : 'Login'} {/* Show loading indicator */}
         </Button>
         <p>Don't have an account yet? <a href="/sign_in">Sign up (free)</a></p>
       </Box>
