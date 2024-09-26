@@ -1,12 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import todoLogo from './assets/todo.svg';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import './sign_in.css'
-
+import './sign_in.css';
 
 const darkTheme = createTheme({
   palette: {
@@ -19,8 +19,7 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
-  
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
@@ -33,6 +32,8 @@ export default function SignIn() {
         },
         credentials: 'include', // Include cookies with the request
         body: new URLSearchParams({
+          action: 'create', // Include the action to create a user
+          name: name,
           email: email,
           password: password,
         }),
@@ -40,9 +41,12 @@ export default function SignIn() {
 
       const data = await response.json();
 
-      console.info(data); // Fix spelling mistake from autehnticated
-
-      
+      if (!data.success) {
+        setError(data.error); // Set the error message from the response
+      } else {
+        console.info('User created successfully');
+        navigate('/login'); // Redirect to the login page after successful registration
+      }
     } catch (err) {
       setError('An error occurred during sign in');
     }
@@ -59,7 +63,15 @@ export default function SignIn() {
       <h1>Sign In</h1>
       <Box
         component="form"
-        sx={{ '& > :not(style)': { m: 1, width: '55ch' } }}
+        sx={{
+          '& > :not(style)': {
+            m: 1,
+            width: {
+              xs: '33ch', // For mobile
+              md: '55ch'  // For desktop
+            }
+          }
+        }}
         noValidate
         autoComplete="off"
         className='login_form'

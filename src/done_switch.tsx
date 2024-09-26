@@ -39,45 +39,56 @@ const TaskDoneSwitch = styled(Switch)(({ theme }) => ({
 
 export default function SwitchIsDone({ taskId }: { taskId: number }) {
   const [done, setDone] = React.useState(false);
+  const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
 
   // Fetch the initial task state
   useEffect(() => {
-    fetch(`https://to-do-back-a6f40cecf847.herokuapp.com/api/get_task_status.php?id=${taskId}`, {
-      credentials: 'include', // Ensure cookies are sent with the request
-    })
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchTaskStatus = async () => {
+      try {
+        const response = await fetch(`https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task_is_done.php?id=${taskId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Include the JWT in the Authorization header
+          },
+        });
+        
+        const data = await response.json();
         setDone(data.is_completed);
-      })
-      .catch((error) => console.error('Error fetching task status:', error));
-  }, [taskId]);
+      } catch (error) {
+        console.error('Error fetching task status:', error);
+      }
+    };
+
+    fetchTaskStatus(); // Call the fetch function
+  }, [taskId, token]);
 
   // Handle switch toggle
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const newDoneStatus = event.target.checked ? 1 : 0;
 
     // Update state locally
     setDone(event.target.checked);
 
     // Send the updated status to the back-end
-    fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task_is_done.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      credentials: 'include', // Ensure cookies are sent with the request
-      body: new URLSearchParams({
-        id: taskId.toString(),
-        done: newDoneStatus.toString(),
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.success) {
-          console.error('Error updating task status:', data.error);
-        }
-      })
-      .catch((error) => console.error('Error updating task status:', error));
+    try {
+      const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task_is_done.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`, // Include the JWT in the Authorization header
+        },
+        body: new URLSearchParams({
+          id: taskId.toString(),
+          done: newDoneStatus.toString(),
+        }),
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        console.error('Error updating task status:', data.error);
+      }
+    } catch (error) {
+      console.error('Error updating task status:', error);
+    }
   };
 
   return (

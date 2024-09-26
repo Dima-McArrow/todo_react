@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import './new_task.css';
 
 export default function SelectImportance({ importance, setImportance }: { importance: string; setImportance: React.Dispatch<React.SetStateAction<string>> }) {
 
@@ -12,7 +13,7 @@ export default function SelectImportance({ importance, setImportance }: { import
   };
 
   return (
-    <Box sx={{ minWidth: 120 }}>
+    <Box sx={{ width: '33ch' }}>
       <FormControl fullWidth>
         <InputLabel id="importance-select-label">Importance</InputLabel>
         <Select

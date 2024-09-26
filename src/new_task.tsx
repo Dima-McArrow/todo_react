@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import todoLogo from './assets/todo.svg';
@@ -37,17 +37,9 @@ export default function CreateTask() {
   const [description, setDescription] = useState('');
   const [importance, setImportance] = useState('');
   const [dueDate, setDueDate] = useState<Dayjs | null>(null);
-  const [userId, setUserId] = useState(''); // Set this from your authentication mechanism
   const [error, setError] = useState('');
 
-  // Fetch the user ID based on your authentication mechanism, if using cookies or localStorage
-  useEffect(() => {
-    // For example, fetching from localStorage (adjust as per your auth logic)
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      setUserId(storedUserId);
-    }
-  }, []);
+  
 
   const handleTaskCreation = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
@@ -61,18 +53,20 @@ export default function CreateTask() {
     try {
       const formattedDueDate = dueDate ? dayjs(dueDate).format('YYYY-MM-DD') : '';
 
+      // Retrieve JWT from localStorage or another source
+      const token = localStorage.getItem('jwt'); // Adjust this according to your app logic
+
       const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`, // Include JWT in the Authorization header
         },
-        credentials: 'include', // Include cookies with the request
         body: new URLSearchParams({
           title,
           description,
           importance,
           due_date: formattedDueDate,
-          user_id: userId, // Make sure to set this value correctly
         }),
       });
 
@@ -87,13 +81,14 @@ export default function CreateTask() {
         setDueDate(null);
         setError('');
       } else {
-        setError(data.message || 'Failed to create task');
+        setError(data.error || 'Failed to create task'); // Use 'error' from response
       }
 
     } catch (err) {
       setError('An error occurred while creating the task');
     }
-  };
+};
+
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -106,7 +101,15 @@ export default function CreateTask() {
       <h1>New task:</h1>
       <Box
         component="form"
-        sx={{ '& > :not(style)': { m: 1, width: '55ch' } }}
+        sx={{
+          '& > :not(style)': {
+            m: 1,
+            width: {
+              xs: '33ch', // For mobile
+              md: '55ch'  // For desktop
+            }
+          }
+        }}
         noValidate
         autoComplete="off"
         className='new_task_form'
@@ -135,7 +138,15 @@ export default function CreateTask() {
         <TaskDatePicker dueDate={dueDate} setDueDate={setDueDate} />
         <SelectImportance importance={importance} setImportance={setImportance} />
         <p className='required_field'>* required field</p>
-        <Button type="submit" variant="contained" color="primary" className='submit_task'>
+        <Button sx={{
+          '& > :not(style)': {
+            m: 1,
+            width: {
+              xs: '23ch', // For mobile
+              md: '45ch'  // For desktop
+            }
+          }
+        }} type="submit" variant="contained" color="primary">
           Create Task
         </Button>
       </Box>

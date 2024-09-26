@@ -96,7 +96,7 @@ async function deleteTask(taskId: number) {
         'Authorization': `Bearer ${token}` // Include the token in the request header
       },
       body: new URLSearchParams({
-        task_id: taskId.toString(),
+        id: taskId.toString(),
       }),
     });
 
