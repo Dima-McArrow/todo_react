@@ -52,7 +52,7 @@ export default function SignIn() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <div className='first_div'>
-        <a href="index.html" target="_blank">
+        <a href="/">
           <img src={todoLogo} className="logo todo" alt="ToDo logo" />
         </a>
       </div>

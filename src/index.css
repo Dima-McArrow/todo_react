@@ -5,7 +5,8 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #363636;
+  /* background-color: #363636; */
+  background: transparent;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,8 +27,8 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
   flex-direction: column;
 }
 
@@ -70,8 +71,8 @@ button:focus-visible {
 
 
 .progress {
-  width: 100vw;
-  height: 100vh;
+  width: 30rem;
+  height: 30rem;
   background: transparent;
   display: flex;
   place-items: center;

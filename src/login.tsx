@@ -8,6 +8,8 @@ import Button from '@mui/material/Button';
 import './login.css';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
+import Chip from '@mui/material/Chip';
 
 const darkTheme = createTheme({
   palette: {
@@ -20,6 +22,7 @@ interface LoginProps {
 }
 
 export default function Login({ setAuthenticated }: LoginProps) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -69,6 +72,10 @@ export default function Login({ setAuthenticated }: LoginProps) {
     }
   };
 
+  const handleSignUpClick = () => {
+    navigate('/sign_in'); // Use navigate to go to sign-in page
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -106,11 +113,12 @@ export default function Login({ setAuthenticated }: LoginProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <p>* required field</p>
+        <p className='sign_in_invite'>* required field</p>
         <Button type="submit" variant="contained" color="primary" className='log_in' disabled={loading}>
-          {loading ? <CircularProgress size={24} /> : 'Login'}
+          {loading ? <CircularProgress className='progress_login' /> : 'Login'}
         </Button>
-        <p>Don't have an account yet? <a href="/sign_in">Sign up (free)</a></p>
+        <p className='sign_in_invite'>Don't have an account yet?</p>
+        <Chip label="Sing in now" variant="outlined" onClick={handleSignUpClick} className='sign_in_chip' />
       </Box>
       {error && (
         <div>

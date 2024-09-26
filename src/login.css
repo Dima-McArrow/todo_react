@@ -1,6 +1,4 @@
 .login_form {
-  width: 100%;
-  max-width: 530px;
   padding: 15px;
   margin: auto;
   display: flex;
@@ -14,4 +12,30 @@
   font-weight: 700;
   margin-bottom: 1rem;
   width: 13rem !important; 
+}
+
+.sign_in_invite {
+  width: 35ch !important;
+}
+
+@media screen and (max-width: 500px) {
+  .MuiFormControl-root,
+  .MuiTextField-root,
+  .css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+    width: 30ch !important;
+  }
+  
+}
+
+.progress_login {
+  width: 30rem;
+  height: 30rem;
+  background: transparent;
+  display: flex;
+  place-items: center;
+  justify-content: center;
+}
+
+.sign_in_chip {
+  width: 13ch !important;
 }

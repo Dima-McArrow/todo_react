@@ -134,7 +134,7 @@ export default function CreateTask() {
         />
         <TaskDatePicker dueDate={dueDate} setDueDate={setDueDate} />
         <SelectImportance importance={importance} setImportance={setImportance} />
-        <p>* required field</p>
+        <p className='required_field'>* required field</p>
         <Button type="submit" variant="contained" color="primary" className='submit_task'>
           Create Task
         </Button>
