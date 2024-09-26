@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
-
-
-
+// Custom styled switch for the done state
 const TaskDoneSwitch = styled(Switch)(({ theme }) => ({
   padding: 8,
   '& .MuiSwitch-track': {
@@ -39,23 +37,52 @@ const TaskDoneSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedSwitches() {
-
+export default function SwitchIsDone({ taskId }: { taskId: number }) {
   const [done, setDone] = React.useState(false);
 
+  // Fetch the initial task state
   useEffect(() => {
-    fetch('https://to-do-back-a6f40cecf847.herokuapp.com/app/get_tasks.php')
-      .then(response => response.json())
-      .then(data => {
-        setDone(data)
-        console.log(done)
+    fetch(`https://to-do-back-a6f40cecf847.herokuapp.com/api/get_task_status.php?id=${taskId}`, {
+      credentials: 'include', // Ensure cookies are sent with the request
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setDone(data.is_completed);
       })
-      .catch(error => console.error(error))
-  }, [])
+      .catch((error) => console.error('Error fetching task status:', error));
+  }, [taskId]);
+
+  // Handle switch toggle
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newDoneStatus = event.target.checked ? 1 : 0;
+
+    // Update state locally
+    setDone(event.target.checked);
+
+    // Send the updated status to the back-end
+    fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task_is_done.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      credentials: 'include', // Ensure cookies are sent with the request
+      body: new URLSearchParams({
+        id: taskId.toString(),
+        done: newDoneStatus.toString(),
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) {
+          console.error('Error updating task status:', data.error);
+        }
+      })
+      .catch((error) => console.error('Error updating task status:', error));
+  };
 
   return (
     <FormControlLabel
-      control={<TaskDoneSwitch />}
+      control={<TaskDoneSwitch checked={done} onChange={handleChange} />}
       label="Done"
     />
   );

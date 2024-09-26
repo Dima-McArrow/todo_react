@@ -145,3 +145,18 @@
   place-items: center;
   justify-content: center;
 }
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+  text-align: center;
+}
+
+li {
+  text-align: center;
+}
+
+.MuiDialog-paperWidthSm {
+  width: 300px;
+}

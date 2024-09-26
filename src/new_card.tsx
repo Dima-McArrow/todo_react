@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -9,14 +9,20 @@ import Typography from '@mui/material/Typography';
 import highPriority from './assets/high-priority-svgrepo-com.svg';
 import mediumPriority from './assets/medium-priority-svgrepo-com.svg';
 import lowPriority from './assets/low-priority-svgrepo-com.svg';
-import CustomizedSwitches from './done_switch';
+import SwitchIsDone from './done_switch';
 import BasicModal from './task_info_modal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './App.css';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 
 // Function to return the correct priority icon
 function returnPriorityIcon(importance: number) {
@@ -30,6 +36,75 @@ function returnPriorityIcon(importance: number) {
     default:
       return lowPriority;
   }
+}
+
+function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => void }) {
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteTask(taskId); // Call the function to delete the task
+    onConfirm(); // Call the callback to refresh the task list
+    handleClose(); // Close the dialog after deletion
+  };
+
+  return (
+    <React.Fragment>
+      <IconButton aria-label="delete" size="small" onClick={handleClickOpen}>
+        <DeleteIcon fontSize="inherit" />
+      </IconButton>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        className="dialog"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Delete the task?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>No</Button>
+          <Button onClick={handleConfirmDelete} autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+  );
+}
+
+function deleteTask(taskId: number) {
+  const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
+
+  fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Bearer ${token}` // Include the token in the request header
+    },
+    credentials: 'include',
+    body: new URLSearchParams({
+      task_id: taskId.toString(),
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.info("data from delete task: ");
+      console.info(data);
+    })
+    .catch((error) => console.error('Error deleting task:', error));
 }
 
 // Task interface
@@ -47,29 +122,26 @@ interface Task {
 export default function BasicCard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState('');
 
   useEffect(() => {
     const getTasksByUser = async () => {
+      const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
+
       try {
         const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
           method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`, // Include the token in the request header
+          },
           credentials: 'include', // Include credentials (cookies) with the request
         });
 
+        if (!response.ok) {
+          throw new Error('Failed to fetch tasks'); // Handle non-200 responses
+        }
+
         const data = await response.json();
-        console.info(data); // Log the response data
-
-        // Set authentication state and user name based on response
-        
-        
-        setUserId(data.user_id); // Get user name from response
-
-          // Make sure tasks are fetched and set them in state
-        
-        setTasks(data); // Assuming tasks are returned in `data.tasks`
-        
-        
+        setTasks(data); // Set tasks in the state
       } catch (error) {
         console.error('Error fetching tasks', error);
       } finally {
@@ -80,7 +152,32 @@ export default function BasicCard() {
     getTasksByUser(); // Call the function to fetch tasks
   }, []);
 
-  console.log(userId)
+  // Function to refresh tasks after deletion
+  const refreshTasks = async () => {
+    setLoading(true); // Start loading
+    const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
+
+    try {
+      const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include the token in the request header
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks'); // Handle non-200 responses
+      }
+
+      const data = await response.json();
+      setTasks(data); // Update task list after deletion
+    } catch (error) {
+      console.error('Error refreshing tasks', error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
   if (loading) {
     return (
@@ -96,14 +193,20 @@ export default function BasicCard() {
         tasks.map((task) => (
           <Card key={task.id} sx={{ minWidth: 275 }}>
             <CardContent>
-              <img className='priority_pic' src={returnPriorityIcon(task.importance)} alt="Priority" />
-              <Typography variant="h5" component="div">
-                {task.title}
-              </Typography>
-              <Typography sx={{ color: 'text.secondary', mb: 1.5, mt: 2 }}>
-                {task.description}
-              </Typography>
-              <hr className='hr_card' />
+              <img className="priority_pic" src={returnPriorityIcon(task.importance)} alt="Priority" />
+              <ul>
+                <li>
+                  <Typography variant="h5" component="div">
+                    {task.title}
+                  </Typography>
+                </li>
+                <li>
+                  <Typography sx={{ color: 'text.secondary', mb: 1.5, mt: 2 }}>
+                    {task.description}
+                  </Typography>
+                </li>
+              </ul>
+              <Divider sx={{ mb: 2.7 }} />
               <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
                 Due date:
               </Typography>
@@ -119,28 +222,20 @@ export default function BasicCard() {
                   />
                 </div>
               </div>
-              <Typography variant="caption">
-                Task created: {task.created_at}
-                <br />
-                Task ID: {task.id}
-                <br />
-                User ID: {task.user_id}
-              </Typography>
             </CardContent>
             <CardActions>
-              <Tooltip title="Delete task" arrow>
-                <IconButton aria-label="delete" size="small">
-                  <DeleteIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
+              {/* Delete task alert dialog */}
+              <AlertDialog taskId={task.id} onConfirm={refreshTasks} />
+
+              {/* Other task actions like edit */}
               <Tooltip title="Edit task" arrow>
                 <IconButton aria-label="edit" size="small">
                   <EditIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
-              {/* Pass task details to each modal */}
+
               <BasicModal task={task} />
-              <CustomizedSwitches />
+              <SwitchIsDone taskId={task.id} />
             </CardActions>
           </Card>
         ))

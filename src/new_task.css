@@ -1,0 +1,9 @@
+.new_task_form {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit_task {
+  margin: 3rem auto !important;
+  width: 300px !important;
+}

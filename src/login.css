@@ -1,0 +1,17 @@
+.login_form {
+  width: 100%;
+  max-width: 530px;
+  padding: 15px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.log_in {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  width: 13rem !important; 
+}

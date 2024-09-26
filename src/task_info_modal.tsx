@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Divider from '@mui/material/Divider';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -58,21 +59,29 @@ export default function BasicModal({ task }: Readonly<BasicModalProps>) {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Task title: {task.title}
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 3 }}>
             Task Description: {task.description}
           </Typography>
+          <Divider sx={{ mb: 3, color: 'white' }} />
           <div className="due-date-container">
-              <div className="calendar-tooltip">
-                <DatePicker
-                  selected={new Date(task.due_date)}
-                  inline
-                  readOnly
-                  calendarStartDay={1}
-                  disabled
-                  disabledKeyboardNavigation
-                />
-              </div>
+            <div className="calendar-tooltip">
+              <DatePicker
+                selected={new Date(task.due_date)}
+                inline
+                readOnly
+                calendarStartDay={1}
+                disabled
+                disabledKeyboardNavigation
+              />
             </div>
+          </div>
+          <Typography variant="caption" sx={{ mt: 5, mb: 3 }}>
+                Task created: {task.created_at}
+                <br />
+                Task ID: {task.id}
+                <br />
+                User ID: {task.user_id}
+              </Typography>
           <Button onClick={handleClose}>Close</Button>
         </Box>
       </Modal>

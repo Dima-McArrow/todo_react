@@ -1,0 +1,14 @@
+.sign_in_form {
+  width: 100%;
+  max-width: 530px;
+  padding: 15px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign_in {
+  width: 13rem !important; 
+}

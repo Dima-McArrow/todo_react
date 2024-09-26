@@ -71,15 +71,14 @@ function App() {
           <a href="https://react.dev" target="_blank">
             <img src={reactLogo} className="logo react" alt="React logo" />
           </a>
-          <a href="index.html" target="_blank">
+          <a href="/">
             <img src={todoLogo} className="logo todo" alt="ToDo logo" />
           </a>
         </div>
-        <h1>Tasks</h1>
-        
+        <h1>Tasks</h1>       
         {/* Display user name if authenticated */}
-        {authenticated && <h2>Welcome, {userName}!</h2>}
-
+        {authenticated && <h2>Hey, {userName}!</h2>}
+        <h4>Here are your tasks:</h4>
         <div className="cards_container">
           <BasicCard />
         </div>

@@ -5,8 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-export default function BasicSelect() {
-  const [importance, setImportance] = React.useState('');
+export default function SelectImportance({ importance, setImportance }: { importance: string; setImportance: React.Dispatch<React.SetStateAction<string>> }) {
 
   const handleChange = (event: SelectChangeEvent) => {
     setImportance(event.target.value as string);
@@ -17,15 +16,15 @@ export default function BasicSelect() {
       <FormControl fullWidth>
         <InputLabel id="importance-select-label">Importance</InputLabel>
         <Select
-          labelId="Importance"
+          labelId="importance-select-label"
           id="importance"
           value={importance}
           label="Importance"
           onChange={handleChange}
         >
-          <MenuItem value={1}>Hight</MenuItem>
-          <MenuItem value={2}>Medium</MenuItem>
-          <MenuItem value={3}>Low</MenuItem>
+          <MenuItem value="1">High</MenuItem>
+          <MenuItem value="2">Medium</MenuItem>
+          <MenuItem value="3">Low</MenuItem>
         </Select>
       </FormControl>
     </Box>
