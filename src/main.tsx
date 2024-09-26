@@ -20,7 +20,7 @@
           console.info("token from main.tsx :");
           console.info(token);
           const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/check_auth.php', {
-            method: 'GET',
+            method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
               'Content-Type': 'application/json', // Set content type if necessary
