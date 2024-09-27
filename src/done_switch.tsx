@@ -109,6 +109,25 @@ export default function SwitchIsDone({ taskId }: { taskId: number }) {
     }
   };
 
+  // Refresh tasks after setting the done state
+  /* const refreshTasks = async () => {
+    setLoading(true); // Start loading
+    const token = localStorage.getItem('jwt');
+    try {
+      const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch tasks');
+      const data = await response.json();
+      setTasks(data); // Update task list after deletion
+    } catch (error) {
+      console.error('Error refreshing tasks', error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  }; */
+
   return (
     <FormControlLabel
       control={<TaskDoneSwitch checked={done === true} onChange={handleChange} />} // Ensure checked is a boolean
