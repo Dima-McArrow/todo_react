@@ -109,7 +109,6 @@ interface Task {
   user_id: number;
 }
 
-
 interface TasksCardsProps {
   filter: number | undefined;
 }
@@ -117,7 +116,6 @@ interface TasksCardsProps {
 export default function TasksCards({ filter }: TasksCardsProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
     const getTasksByUser = async () => {
@@ -170,7 +168,6 @@ export default function TasksCards({ filter }: TasksCardsProps) {
 
   console.info("Filter: ", filter);
   console.info("Filtered tasks: ", filteredTasks);
-
 
   if (loading) {
     return <CircularProgress />;
