@@ -6,7 +6,7 @@ import Logout from './logout';
 import PositionedMenu from './menu';
 
 interface ButtonAppBarProps {
-  onFilterChange: (filter: 'all' | 'todo' | 'done') => void; // Prop to handle filter change
+  onFilterChange: (filter: number | undefined) => void; // Change prop type to number or undefined
 }
 
 export default function ButtonAppBar({ onFilterChange }: ButtonAppBarProps) {

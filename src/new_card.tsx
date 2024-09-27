@@ -105,11 +105,16 @@ interface Task {
   importance: number;
   due_date: string;
   created_at: string;
-  is_done: boolean;
+  is_completed: number;
   user_id: number;
 }
 
-export default function TasksCards() {
+
+interface TasksCardsProps {
+  filter: number | undefined;
+}
+
+export default function TasksCards({ filter }: TasksCardsProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -125,6 +130,7 @@ export default function TasksCards() {
         if (!response.ok) throw new Error('Failed to fetch tasks');
         const data = await response.json();
         setTasks(data); // Set tasks in the state
+        console.info("Data from get tasks by user: ", data);
       } catch (error) {
         console.error('Error fetching tasks', error);
       } finally {
@@ -153,12 +159,18 @@ export default function TasksCards() {
     }
   };
 
-  // Filter tasks based on the current filter state
-  /* const filteredTasks = tasks.filter((task) => {
-    if (filter === 'todo') return !task.is_done;
-    if (filter === 'done') return task.is_done;
-    return true; // Show all tasks
-  }); */
+  const filteredTasks = tasks.filter((task) => {
+    if (typeof filter === 'boolean') {
+      return filter ? task.is_completed === 1 : task.is_completed === 0; // Check against 1 for completed and 0 for not completed
+    } else if (typeof filter === 'number') {
+      return filter === 1 ? task.is_completed === 1 : task.is_completed === 0; // Same logic for number
+    }
+    return true; // Show all tasks if filter is neither
+  });
+
+  console.info("Filter: ", filter);
+  console.info("Filtered tasks: ", filteredTasks);
+
 
   if (loading) {
     return <CircularProgress />;
@@ -166,8 +178,8 @@ export default function TasksCards() {
 
   return (
     <>
-      {tasks.length > 0 ? (
-        tasks.map((task) => (
+      {filteredTasks.length > 0 ? (
+        filteredTasks.map((task) => (
           <Card key={task.id} sx={{ minWidth: 275 }}>
             <CardContent>
               <img className="priority_pic" src={returnPriorityIcon(task.importance)} alt="Priority" />

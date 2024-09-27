@@ -30,7 +30,7 @@ interface Task {
   importance: number;
   due_date: string;
   created_at: string;
-  is_done: boolean;
+  is_completed: number;
   user_id: number;
 }
 
