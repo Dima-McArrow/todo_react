@@ -5,14 +5,18 @@ import Typography from '@mui/material/Typography';
 import Logout from './logout';
 import PositionedMenu from './menu';
 
-export default function ButtonAppBar() {
+interface ButtonAppBarProps {
+  onFilterChange: (filter: 'all' | 'todo' | 'done') => void; // Prop to handle filter change
+}
+
+export default function ButtonAppBar({ onFilterChange }: ButtonAppBarProps) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
         <Toolbar>
-        <PositionedMenu />
+          <PositionedMenu onFilterChange={onFilterChange} /> {/* Pass the filter change handler to the menu */}
           <Typography variant="h6" textTransform={'uppercase'} component="div" sx={{ flexGrow: 1 }}>
-          Vite + React ToDo app
+            Vite + React ToDo app
           </Typography>
           <Logout />
         </Toolbar>

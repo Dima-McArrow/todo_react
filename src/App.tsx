@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import todoLogo from './assets/todo.svg';
 import ButtonAppBar from './header';
-import BasicCard from './new_card';
+import TasksCards from './new_card';
 import AddTaskButton from './add_task_button';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -24,6 +24,7 @@ function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('');
+  const [filter, setFilter] = useState<'all' | 'todo' | 'done'>('all'); // Add filter state
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -49,7 +50,7 @@ function App() {
 
         if (data.authenticated) {
           setAuthenticated(true);
-          setUserName(data.user_id); // Get user name from the backend
+          setUserName(data.name); // Get user name from the backend
         } else {
           console.error('User not authenticated');
         }
@@ -75,7 +76,7 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <>
-        <ButtonAppBar />
+        <ButtonAppBar onFilterChange={setFilter} /> {/* Pass the filter change handler */}
         <div className='first_div'>
           <a href="https://vitejs.dev" target="_blank">
             <img src={viteLogo} className="logo" alt="Vite logo" />
@@ -92,7 +93,7 @@ function App() {
         {authenticated && <h2>Hey, {userName}!</h2>}
         <h4>Here are your tasks:</h4>
         <div className="cards_container">
-          <BasicCard />
+          <TasksCards filter={filter} /> {/* Pass the filter to TasksCards */}
         </div>
         <AddTaskButton />
         <Footer />

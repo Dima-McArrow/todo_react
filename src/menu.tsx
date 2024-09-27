@@ -5,12 +5,18 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import './App.css';
 
-export default function PositionedMenu() {
+interface PositionedMenuProps {
+  onFilterChange: (filter: 'all' | 'todo' | 'done') => void; // Prop to handle filter change
+}
+
+export default function PositionedMenu({ onFilterChange }: PositionedMenuProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -41,9 +47,9 @@ export default function PositionedMenu() {
           horizontal: 'left',
         }}
       >
-        <MenuItem onClick={handleClose}>Show all</MenuItem>
-        <MenuItem onClick={handleClose}>Show to do tasks</MenuItem>
-        <MenuItem onClick={handleClose}>Show done</MenuItem>
+        <MenuItem onClick={() => { onFilterChange('all'); handleClose(); }}>Show all</MenuItem>
+        <MenuItem onClick={() => { onFilterChange('todo'); handleClose(); }}>Show to do tasks</MenuItem>
+        <MenuItem onClick={() => { onFilterChange('done'); handleClose(); }}>Show done</MenuItem>
         <Divider />
         <MenuItem onClick={handleClose}>Create new task</MenuItem>
       </Menu>

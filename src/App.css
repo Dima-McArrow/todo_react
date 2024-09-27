@@ -132,6 +132,11 @@
   pointer-events: none !important;
 }
 
+.react-datepicker__day--selected {
+  border: 1px solid !important;
+  font-size: 1.1rem !important;
+  background-color: transparent !important;
+}
 
 .react-datepicker__day--weekend {
   color: rgb(248, 57, 57) !important;

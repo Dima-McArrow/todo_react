@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -38,6 +38,7 @@ function returnPriorityIcon(importance: number) {
   }
 }
 
+// Dialog to confirm task deletion
 function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => void }) {
   const [open, setOpen] = useState(false);
 
@@ -50,29 +51,21 @@ function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => v
   };
 
   const handleConfirmDelete = async () => {
-    await deleteTask(taskId); // Call the function to delete the task
-    onConfirm(); // Call the callback to refresh the task list
-    handleClose(); // Close the dialog after deletion
+    await deleteTask(taskId); // Delete the task
+    onConfirm(); // Refresh task list
+    handleClose(); // Close the dialog
   };
 
   return (
-    <React.Fragment>
+    <>
       <IconButton aria-label="delete" size="small" onClick={handleClickOpen}>
         <DeleteIcon fontSize="inherit" />
       </IconButton>
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        className="dialog"
-      >
-        <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
+      <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title">
+        <DialogTitle>{"Are you sure?"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Delete the task?
-          </DialogContentText>
+          <DialogContentText>Delete the task?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>No</Button>
@@ -81,13 +74,13 @@ function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => v
           </Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </>
   );
 }
 
+// Function to delete the task
 async function deleteTask(taskId: number) {
   const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
-
   try {
     const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php', {
       method: 'POST',
@@ -95,11 +88,8 @@ async function deleteTask(taskId: number) {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': `Bearer ${token}` // Include the token in the request header
       },
-      body: new URLSearchParams({
-        id: taskId.toString(),
-      }),
+      body: new URLSearchParams({ id: taskId.toString() }),
     });
-
     const data = await response.json();
     console.info("Data from delete task: ", data);
   } catch (error) {
@@ -119,26 +109,20 @@ interface Task {
   user_id: number;
 }
 
-export default function BasicCard() {
+export default function TasksCards() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     const getTasksByUser = async () => {
       const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
-
       try {
         const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`, // Include the token in the request header
-          },
+          headers: { 'Authorization': `Bearer ${token}` }, // Include the token in the request header
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch tasks'); // Handle non-200 responses
-        }
-
+        if (!response.ok) throw new Error('Failed to fetch tasks');
         const data = await response.json();
         setTasks(data); // Set tasks in the state
       } catch (error) {
@@ -147,27 +131,19 @@ export default function BasicCard() {
         setLoading(false); // End loading state
       }
     };
-
-    getTasksByUser(); // Call the function to fetch tasks
+    getTasksByUser(); // Fetch tasks on component mount
   }, []);
 
-  // Function to refresh tasks after deletion
+  // Refresh tasks after deletion
   const refreshTasks = async () => {
     setLoading(true); // Start loading
-    const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
-
+    const token = localStorage.getItem('jwt');
     try {
       const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`, // Include the token in the request header
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch tasks'); // Handle non-200 responses
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch tasks');
       const data = await response.json();
       setTasks(data); // Update task list after deletion
     } catch (error) {
@@ -177,12 +153,15 @@ export default function BasicCard() {
     }
   };
 
+  // Filter tasks based on the current filter state
+  /* const filteredTasks = tasks.filter((task) => {
+    if (filter === 'todo') return !task.is_done;
+    if (filter === 'done') return task.is_done;
+    return true; // Show all tasks
+  }); */
+
   if (loading) {
-    return (
-      <div>
-        <CircularProgress />
-      </div>
-    );
+    return <CircularProgress />;
   }
 
   return (

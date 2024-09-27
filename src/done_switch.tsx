@@ -38,21 +38,35 @@ const TaskDoneSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function SwitchIsDone({ taskId }: { taskId: number }) {
-  const [done, setDone] = React.useState(false);
+  const [done, setDone] = React.useState<boolean | null>(null); // Set initial state as null
   const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
 
   // Fetch the initial task state
   useEffect(() => {
     const fetchTaskStatus = async () => {
       try {
-        const response = await fetch(`https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task_is_done.php?id=${taskId}`, {
+        const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/set_task_is_done.php', {
+          method: 'POST', // Use POST to fetch task status
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': `Bearer ${token}`, // Include the JWT in the Authorization header
           },
+          body: new URLSearchParams({
+            fetch: 'true', // Indicate that this is a fetch request
+            taskId: taskId.toString(), // Pass the task ID in the body
+          }),
         });
-        
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
         const data = await response.json();
-        setDone(data.is_completed);
+        if (data.success) {
+          setDone(data.is_completed === 1); // Assuming is_completed is a boolean
+        } else {
+          console.error('Error fetching task status:', data.error);
+        }
       } catch (error) {
         console.error('Error fetching task status:', error);
       }
@@ -63,10 +77,10 @@ export default function SwitchIsDone({ taskId }: { taskId: number }) {
 
   // Handle switch toggle
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newDoneStatus = event.target.checked ? 1 : 0;
+    const newDoneStatus = event.target.checked ? true : false;
 
     // Update state locally
-    setDone(event.target.checked);
+    setDone(newDoneStatus);
 
     // Send the updated status to the back-end
     try {
@@ -77,23 +91,27 @@ export default function SwitchIsDone({ taskId }: { taskId: number }) {
           'Authorization': `Bearer ${token}`, // Include the JWT in the Authorization header
         },
         body: new URLSearchParams({
-          id: taskId.toString(),
-          done: newDoneStatus.toString(),
+          taskId: taskId.toString(), // Pass the task ID in the body
+          done: newDoneStatus ? '1' : '0', // Send '1' for true, '0' for false
         }),
       });
 
       const data = await response.json();
       if (!data.success) {
         console.error('Error updating task status:', data.error);
+        // Optionally revert the switch state if update fails
+        setDone(!newDoneStatus);
       }
     } catch (error) {
       console.error('Error updating task status:', error);
+      // Optionally revert the switch state if update fails
+      setDone(!newDoneStatus);
     }
   };
 
   return (
     <FormControlLabel
-      control={<TaskDoneSwitch checked={done} onChange={handleChange} />}
+      control={<TaskDoneSwitch checked={done === true} onChange={handleChange} />} // Ensure checked is a boolean
       label="Done"
     />
   );
