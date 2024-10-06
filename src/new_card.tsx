@@ -1,28 +1,28 @@
-import { useEffect, useState } from 'react';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Typography from '@mui/material/Typography';
-import highPriority from './assets/high-priority-svgrepo-com.svg';
-import mediumPriority from './assets/medium-priority-svgrepo-com.svg';
-import lowPriority from './assets/low-priority-svgrepo-com.svg';
-import SwitchIsDone from './done_switch';
-import BasicModal from './task_info_modal';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import './App.css';
-import Tooltip from '@mui/material/Tooltip';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import { useEffect, useState } from "react";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import Typography from "@mui/material/Typography";
+import highPriority from "./assets/high-priority-svgrepo-com.svg";
+import mediumPriority from "./assets/medium-priority-svgrepo-com.svg";
+import lowPriority from "./assets/low-priority-svgrepo-com.svg";
+import SwitchIsDone from "./done_switch";
+import BasicModal from "./task_info_modal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./App.css";
+import Tooltip from "@mui/material/Tooltip";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
 // Function to return the correct priority icon
 function returnPriorityIcon(importance: number) {
@@ -39,7 +39,13 @@ function returnPriorityIcon(importance: number) {
 }
 
 // Dialog to confirm task deletion
-function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => void }) {
+function AlertDialog({
+  taskId,
+  onConfirm,
+}: {
+  taskId: number;
+  onConfirm: () => void;
+}) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -62,7 +68,11 @@ function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => v
         <DeleteIcon fontSize="inherit" />
       </IconButton>
 
-      <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title">
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+      >
         <DialogTitle>{"Are you sure?"}</DialogTitle>
         <DialogContent>
           <DialogContentText>Delete the task?</DialogContentText>
@@ -80,20 +90,23 @@ function AlertDialog({ taskId, onConfirm }: { taskId: number; onConfirm: () => v
 
 // Function to delete the task
 async function deleteTask(taskId: number) {
-  const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
+  const token = localStorage.getItem("jwt"); // Retrieve the JWT from local storage
   try {
-    const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Bearer ${token}` // Include the token in the request header
-      },
-      body: new URLSearchParams({ id: taskId.toString() }),
-    });
+    const response = await fetch(
+      "https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`, // Include the token in the request header
+        },
+        body: new URLSearchParams({ id: taskId.toString() }),
+      }
+    );
     const data = await response.json();
     console.info("Data from delete task: ", data);
   } catch (error) {
-    console.error('Error deleting task:', error);
+    console.error("Error deleting task:", error);
   }
 }
 
@@ -119,18 +132,21 @@ export default function TasksCards({ filter }: TasksCardsProps) {
 
   useEffect(() => {
     const getTasksByUser = async () => {
-      const token = localStorage.getItem('jwt'); // Retrieve the JWT from local storage
+      const token = localStorage.getItem("jwt"); // Retrieve the JWT from local storage
       try {
-        const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }, // Include the token in the request header
-        });
-        if (!response.ok) throw new Error('Failed to fetch tasks');
+        const response = await fetch(
+          "https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php",
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` }, // Include the token in the request header
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch tasks");
         const data = await response.json();
         setTasks(data); // Set tasks in the state
         console.info("Data from get tasks by user: ", data);
       } catch (error) {
-        console.error('Error fetching tasks', error);
+        console.error("Error fetching tasks", error);
       } finally {
         setLoading(false); // End loading state
       }
@@ -141,26 +157,29 @@ export default function TasksCards({ filter }: TasksCardsProps) {
   // Refresh tasks after deletion
   const refreshTasks = async () => {
     setLoading(true); // Start loading
-    const token = localStorage.getItem('jwt');
+    const token = localStorage.getItem("jwt");
     try {
-      const response = await fetch('https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error('Failed to fetch tasks');
+      const response = await fetch(
+        "https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php",
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch tasks");
       const data = await response.json();
       setTasks(data); // Update task list after deletion
     } catch (error) {
-      console.error('Error refreshing tasks', error);
+      console.error("Error refreshing tasks", error);
     } finally {
       setLoading(false); // Stop loading
     }
   };
 
   const filteredTasks = tasks.filter((task) => {
-    if (typeof filter === 'boolean') {
+    if (typeof filter === "boolean") {
       return filter ? task.is_completed === 1 : task.is_completed === 0; // Check against 1 for completed and 0 for not completed
-    } else if (typeof filter === 'number') {
+    } else if (typeof filter === "number") {
       return filter === 1 ? task.is_completed === 1 : task.is_completed === 0; // Same logic for number
     }
     return true; // Show all tasks if filter is neither
@@ -179,7 +198,11 @@ export default function TasksCards({ filter }: TasksCardsProps) {
         filteredTasks.map((task) => (
           <Card key={task.id} sx={{ minWidth: 275 }}>
             <CardContent>
-              <img className="priority_pic" src={returnPriorityIcon(task.importance)} alt="Priority" />
+              <img
+                className="priority_pic"
+                src={returnPriorityIcon(task.importance)}
+                alt="Priority"
+              />
               <ul>
                 <li>
                   <Typography variant="h5" component="div">
@@ -187,13 +210,13 @@ export default function TasksCards({ filter }: TasksCardsProps) {
                   </Typography>
                 </li>
                 <li>
-                  <Typography sx={{ color: 'text.secondary', mb: 1.5, mt: 2 }}>
+                  <Typography sx={{ color: "text.secondary", mb: 1.5, mt: 2 }}>
                     {task.description}
                   </Typography>
                 </li>
               </ul>
               <Divider sx={{ mb: 2.7 }} />
-              <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+              <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
                 Due date:
               </Typography>
               <div className="due-date-container">
@@ -226,7 +249,7 @@ export default function TasksCards({ filter }: TasksCardsProps) {
           </Card>
         ))
       ) : (
-        <Typography variant="h6" sx={{ textAlign: 'center', mt: 2 }}>
+        <Typography variant="h6" sx={{ textAlign: "center", mt: 2 }}>
           You don't have any tasks yet.
         </Typography>
       )}
