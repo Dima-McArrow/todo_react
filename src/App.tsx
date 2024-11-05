@@ -38,7 +38,7 @@ function App() {
 
         // Send request to the backend to validate the JWT and fetch user info
         const response = await fetch(
-          "https://to-do-back-a6f40cecf847.herokuapp.com/api/check_auth.php",
+          "https://todoback.osc-fr1.scalingo.io/api/check_auth.php",
           {
             method: "GET",
             headers: {

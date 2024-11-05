@@ -93,7 +93,7 @@ async function deleteTask(taskId: number) {
   const token = localStorage.getItem("jwt"); // Retrieve the JWT from local storage
   try {
     const response = await fetch(
-      "https://to-do-back-a6f40cecf847.herokuapp.com/api/delete_task.php",
+      "https://todoback.osc-fr1.scalingo.io/api/delete_task.php",
       {
         method: "POST",
         headers: {
@@ -135,7 +135,7 @@ export default function TasksCards({ filter }: TasksCardsProps) {
       const token = localStorage.getItem("jwt"); // Retrieve the JWT from local storage
       try {
         const response = await fetch(
-          "https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php",
+          "https://todoback.osc-fr1.scalingo.io/api/get_tasks.php",
           {
             method: "POST",
             headers: { Authorization: `Bearer ${token}` }, // Include the token in the request header
@@ -160,7 +160,7 @@ export default function TasksCards({ filter }: TasksCardsProps) {
     const token = localStorage.getItem("jwt");
     try {
       const response = await fetch(
-        "https://to-do-back-a6f40cecf847.herokuapp.com/api/get_tasks.php",
+        "https://todoback.osc-fr1.scalingo.io/api/get_tasks.php",
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
