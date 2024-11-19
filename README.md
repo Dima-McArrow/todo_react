@@ -133,7 +133,7 @@ This project uses ESLint to maintain code quality and consistency. Please follow
 
 ## ⚖️ License
 
-Distributed under the MIT License. See `LICENSE` file for more information.
+Distributed under the ISC License. See `LICENSE` file for more information.
 
 Project Link: [https://github.com/your-username/todo_react](https://github.com/your-username/todo_react)
 
