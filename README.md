@@ -1,6 +1,6 @@
 # ToDo React Project
 
-![GitHub License](https://img.shields.io/github/license/Dima-McArrow/todo_react)
+[![GitHub License](https://img.shields.io/github/license/Dima-McArrow/todo_react)](/LICENSE)
 
 ## 🌟 Introduction
 
