@@ -24,7 +24,7 @@ To set up the project for development on your local machine, please follow these
 
 1. Clone the repository to your local machine:
    ```sh
-   git clone https://github.com/your-username/todo_react.git
+   git clone https://github.com/Dima-McArrow/todo_react.git
    ```
 2. Change the working directory to the project directory:
    ```sh
